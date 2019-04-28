@@ -113,9 +113,21 @@ pub fn parse_fetches(
             }
 
             Ok(MapOrNot::Map(fetch))
-        }
+        },
+        Response::MailboxData(m) => {
+            use imap_proto::MailboxDatum;
+            match m {
+                MailboxDatum::Flags(flags) => {
+                    trace!("Matched flags")
+                },
+                _ => {}
+            }
+            Ok(MapOrNot::Ignore)
+        },
         resp => Ok(MapOrNot::Not(resp)),
     };
+
+    trace!("{}", std::str::from_utf8(&*lines).unwrap());
 
     unsafe { parse_many(lines, f, unsolicited) }
 }
@@ -194,6 +206,8 @@ pub fn parse_mailbox(
     unsolicited: &mut mpsc::Sender<UnsolicitedResponse>,
 ) -> Result<Mailbox> {
     let mut mailbox = Mailbox::default();
+
+    trace!("{}", std::str::from_utf8(lines).unwrap());
 
     loop {
         match imap_proto::parse_response(lines) {

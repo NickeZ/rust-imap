@@ -66,6 +66,8 @@ extern crate imap_proto;
 extern crate native_tls;
 extern crate nom;
 extern crate regex;
+#[macro_use]
+extern crate log;
 
 mod parse;
 
